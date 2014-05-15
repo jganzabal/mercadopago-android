@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Mercadopago</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_card_form_number_input_label">Número de tarjeta</string>
+    <string name="add_card_form_expire_date_input_label">Válida hasta</string>
+    <string name="add_card_form_expire_date_hint">Mes / Año</string>
+    <string name="add_card_form_last_and_first_name_input">Nombre y apellido impreso en la tarjeta</string>
+    <string name="add_card_form_document_type_input">Tipo</string>
+    <string name="add_card_form_document_number_input">Documento</string>
+    <string name="add_card_form_security_code_input">Código de seguridad</string>
+    <string name="add_card_form_security_code_hint">##CANT## dígitos al ##WHERE## de la tarjeta</string>
+    <string name="add_card_form_save_button">Continuar</string>
+    <string name="mp_html_total_wo_installments"><![CDATA[ <strong> %2$s %1$s </strong>]]></string>
+    <string name="mp_html_total_w_installments"><![CDATA[ <strong> %1$s x %4$s %2$s</strong> <font color="grey">(%4$s %3$s)</font>  ]]></string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
