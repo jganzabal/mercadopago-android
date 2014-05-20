@@ -16,5 +16,6 @@
     <string name="mp_html_total_wo_installments"><![CDATA[ <strong> %2$s %1$s </strong>]]></string>
     <string name="mp_html_total_w_installments"><![CDATA[ <strong> %1$s x %4$s %2$s</strong> <font color="grey">(%4$s %3$s)</font>  ]]></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="spinner_header">asdf</string>
 
 </resources>

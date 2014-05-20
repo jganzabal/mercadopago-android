@@ -28,10 +28,11 @@ public class RetrofitUtil {
     }
 
     public static JSONObject parseErrorBody(RetrofitError e) {
-        if (e.getResponse() != null) {
-            try { return new JSONObject(getErrorBody(e.getResponse().getBody())); } catch (JSONException ignored) { }
-        }
-
+        try {
+            if (e.getResponse() != null) {
+                return new JSONObject(getErrorBody(e.getResponse().getBody()));
+            }
+        } catch (Exception ignored) { }
         return null;
     }
 

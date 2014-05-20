@@ -1,14 +1,16 @@
 package com.mercadopago;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.DateTypeAdapter;
 import com.mercadopago.model.Card;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.Token;
+import com.threatmetrix.TrustDefenderMobile.TrustDefenderMobile;
 
-import java.util.Date;
 import java.util.List;
 
 import retrofit.Callback;
@@ -18,45 +20,57 @@ import retrofit.converter.GsonConverter;
 public class Mercadopago {
     private static final String MERCADOPAGO_BASE_URL = "https://pagamento.mercadopago.com";
     private static final String BASE_URL = "https://api.mercadolibre.com";
-    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).serializeNulls().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
     private final String defaultPublishableKey;
-    public Mercadopago(String publishableKey) {
-        this.defaultPublishableKey = publishableKey;
+    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).serializeNulls().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
+    private final RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(MERCADOPAGO_BASE_URL).setLogLevel(RestAdapter.LogLevel.FULL).setConverter(new GsonConverter(gson)).build();
+    private final RestAdapter restAdapterApi = new RestAdapter.Builder().setEndpoint(BASE_URL).setLogLevel(RestAdapter.LogLevel.FULL).setConverter(new GsonConverter(gson)).build();
+    private final TrustDefenderMobile profile = new TrustDefenderMobile();
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    private final String sessionId;
+
+    public Mercadopago(String publishableKey, Context context) {
+        defaultPublishableKey = publishableKey;
+        profile.setTimeout(10);
+        TrustDefenderMobile.THMStatusCode status = profile.doProfileRequest(context, "jk96mpy0", "h.online-metrix.net");
+        if(status == TrustDefenderMobile.THMStatusCode.THM_OK) {
+            sessionId = this.profile.getSessionID();
+            Log.d("Sample", "My session id is " + sessionId);
+        }else{
+            sessionId = "";
+        }
     }
 
     public void createToken(final Card card, final Callback<Token> callback){
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(MERCADOPAGO_BASE_URL).setConverter(new GsonConverter(gson)).build();
         GatewayService service = restAdapter.create(GatewayService.class);
-        service.getToken(defaultPublishableKey, card.getAsMap(), callback);
+        service.getToken(defaultPublishableKey, card, callback);
     }
 
     public void getPaymentMethodByBin(String bin, Callback<List<PaymentMethod>> callback){
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(BASE_URL).setConverter(new GsonConverter(gson)).build();
-        PaymentService service = restAdapter.create(PaymentService.class);
+        PaymentService service = restAdapterApi.create(PaymentService.class);
         service.getPaymentMethodByBin(defaultPublishableKey, bin, callback);
     }
 
     public void getPaymentMethodById(String paymentMethod, Callback<List<PaymentMethod>> callback){
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(BASE_URL).setConverter(new GsonConverter(gson)).build();
-        PaymentService service = restAdapter.create(PaymentService.class);
-        service.getPaymentMethodById(defaultPublishableKey, paymentMethod, callback);
+        PaymentService service = restAdapterApi.create(PaymentService.class);
     }
 
-    public Token createToken(final Card card){
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(MERCADOPAGO_BASE_URL).setConverter(new GsonConverter(gson)).build();
+    public Token createToken(final Card card, Context context){
         GatewayService service = restAdapter.create(GatewayService.class);
-        return service.getToken(defaultPublishableKey, card.getAsMap());
+        Token token = service.getToken(defaultPublishableKey, card);
+        return token;
     }
 
     public List<PaymentMethod> getPaymentMethodByBin(String bin){
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(BASE_URL).setConverter(new GsonConverter(gson)).build();
-        PaymentService service = restAdapter.create(PaymentService.class);
+        PaymentService service = restAdapterApi.create(PaymentService.class);
         return service.getPaymentMethodByBin(defaultPublishableKey, bin);
     }
 
     public List<PaymentMethod> getPaymentMethodById(String paymentMethod){
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(BASE_URL).setConverter(new GsonConverter(gson)).build();
-        PaymentService service = restAdapter.create(PaymentService.class);
+        PaymentService service = restAdapterApi.create(PaymentService.class);
         return service.getPaymentMethodById(defaultPublishableKey, paymentMethod);
     }
 

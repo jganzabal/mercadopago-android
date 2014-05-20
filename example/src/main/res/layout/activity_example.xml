@@ -20,7 +20,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:orientation="horizontal" >
 
                 <TextView
@@ -47,7 +47,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:text="@string/add_card_form_expire_date_input_label"
                 android:textStyle="bold" />
             <LinearLayout
@@ -95,7 +95,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:text="@string/add_card_form_last_and_first_name_input"
                 android:textStyle="bold" />
 
@@ -125,7 +125,7 @@
                         android:id="@+id/add_card_form_doc_type_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
+                        android:layout_marginBottom="5dp"
                         android:text="@string/add_card_form_document_type_input"
                         android:textStyle="bold" />
 
@@ -149,7 +149,7 @@
                         android:id="@+id/add_card_form_document_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
+                        android:layout_marginBottom="5dp"
                         android:text="@string/add_card_form_document_number_input"
                         android:textStyle="bold" />
 
@@ -188,7 +188,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
+                        android:layout_marginBottom="5dp"
                         android:text="@string/add_card_form_security_code_input"
                         android:textStyle="bold" />
 
@@ -200,13 +200,27 @@
                         android:singleLine="true" />
                 </LinearLayout>
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/installments_container"
+                style="@style/box_linear_default"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:baselineAligned="false" >
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spinner"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
         </LinearLayout>
 
         <Button
             android:id="@+id/add_card_form_continue"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="@string/add_card_form_save_button"
             android:textColor="@android:color/white"

@@ -1,5 +1,6 @@
 package com.mercadopago;
 
+import com.mercadopago.model.Card;
 import com.mercadopago.model.Token;
 
 import java.util.Map;
@@ -14,8 +15,8 @@ import retrofit.http.Query;
  */
 public interface GatewayService {
     @POST("/card_tokens")
-    void getToken(@Query("public_key") String public_key, @Body Map<String, Object> card, Callback<Token> callback);
+    void getToken(@Query("public_key") String public_key, @Body Card card, Callback<Token> callback);
 
     @POST("/card_tokens")
-    Token getToken(@Query("public_key") String public_key, @Body Map<String, Object> card);
+    Token getToken(@Query("public_key") String public_key, @Body Card card);
 }

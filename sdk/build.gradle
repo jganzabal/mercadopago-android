@@ -8,5 +8,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.google.android:android:2.2.+'
     compile 'com.squareup.retrofit:retrofit:1.5.1'
-
+    compile files('libs/TrustDefenderMobile-2.1.4.jar')
 }

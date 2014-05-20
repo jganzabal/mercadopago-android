@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class Card {
+    private final static Calendar now = Calendar.getInstance();
 
     String cardNumber;
     Integer securityCode;
@@ -166,18 +167,15 @@ public class Card {
 
     private static boolean hasYearPassed(int year) {
         int normalized = normalizeYear(year);
-        Calendar now = Calendar.getInstance();
         return normalized < now.get(Calendar.YEAR);
     }
 
     private static boolean hasMonthPassed(int year, int month) {
-        Calendar now = Calendar.getInstance();
         return hasYearPassed(year) || normalizeYear(year) == now.get(Calendar.YEAR) && month < (now.get(Calendar.MONTH) + 1);
     }
 
     private static int normalizeYear(int year)  {
         if (year < 100 && year >= 0) {
-            Calendar now = Calendar.getInstance();
             String currentYear = String.valueOf(now.get(Calendar.YEAR));
             String prefix = currentYear.substring(0, currentYear.length() - 2);
             year = Integer.parseInt(String.format(Locale.US, "%s%02d", prefix, year));

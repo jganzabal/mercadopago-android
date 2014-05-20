@@ -1,22 +1,23 @@
 package com.mercadopago.example;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.mercadopago.Mercadopago;
+import com.mercadopago.TokenCallback;
 import com.mercadopago.model.Card;
+import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.Token;
+import com.mercadopago.util.InstallmentAdapter;
 import com.mercadopago.util.RetrofitUtil;
 
-import junit.framework.Assert;
-
-import org.json.JSONException;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -31,51 +32,73 @@ public class ExampleActivity extends Activity {
     private EditText name;
     private EditText docType;
     private EditText docNumber;
+    private Mercadopago mp;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_example);
+        setInputs();
+
+        //Init mercadopago object with public key
+        mp = new Mercadopago("841d020b-1077-4742-ad55-7888a0f5aefa", this);
+
+        //Get payment methods and show installments spinner
+        handleInstallments();
+    }
 
     public void submitForm(View view){
-        setInputs();
-        //Init mercadopago object with public key
-        Mercadopago mp = new Mercadopago("841d020b-1077-4742-ad55-7888a0f5aefa");
         //Create card object with card data
         Card card = new Card(getCardNumber(), getMonth(), getYear(), getSecurityCode(), getName(), getDocType(), getDocNumber());
 
-        Callback callback = new Callback<Token>() {
+        //Callback handler
+        TokenCallback callback = new TokenCallback(mp) {
             @Override
-            public void success(Token o, Response response) {
-                Context context = getApplicationContext();
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, o.getId(), duration);
-                toast.show();
+            public void success(Token o) {
+                Toast.makeText(getApplicationContext(), o.getId(), Toast.LENGTH_LONG).show();
             }
             @Override
             public void failure(RetrofitError error) {
-                try {
-                    Assert.fail(String.valueOf(RetrofitUtil.parseErrorBody(error).getString("cause")));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                Toast.makeText(getApplicationContext(), RetrofitUtil.parseErrorBody(error).toString(), Toast.LENGTH_LONG).show();
             }
         };
+
         //Check valid card data
         if(card.validateCard()) {
             //Send card data to get token id
             mp.createToken(card, callback);
+        }else{
+            Toast.makeText(getApplicationContext(), "Datos inválidos", Toast.LENGTH_LONG).show();
         }
     }
 
-    void setInputs(){
-        cardNumber = (EditText) findViewById(R.id.add_card_form_card_number);
-        month = (EditText) findViewById(R.id.add_card_form_month);
-        year = (EditText) findViewById(R.id.add_card_form_year);
-        securityCode = (EditText) findViewById(R.id.add_card_form_security_code);
-        name = (EditText) findViewById(R.id.add_card_form_full_name);
-        docType = (EditText) findViewById(R.id.add_card_form_document_type);
-        docNumber = (EditText) findViewById(R.id.add_card_form_document_number);
+    void handleInstallments(){
+        cardNumber.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {}
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() == 6) {
+                    Callback cb = new Callback<List<PaymentMethod>>() {
+                        @Override
+                        public void success(List<PaymentMethod> o, Response response) {
+                            InstallmentAdapter adapter = new InstallmentAdapter(ExampleActivity.this, o.get(0).getPayerCosts(), new Double("100"));
+                            ((Spinner)findViewById(R.id.spinner)).setAdapter(adapter);
+                        }
+                        @Override
+                        public void failure(RetrofitError error) {
+                            Toast.makeText(getApplicationContext(), RetrofitUtil.parseErrorBody(error).toString(), Toast.LENGTH_LONG).show();
+                        }
+                    };
+                    mp.getPaymentMethodByBin(getCardNumber().substring(0,6), cb);
+                }
+            }
+        });
     }
 
-    String getCardNumber() {
-        return this.cardNumber.getText().toString();
-    }
+    String getCardNumber() { return this.cardNumber.getText().toString();}
 
     Integer getMonth(){ return getInteger(this.month);}
 
@@ -97,24 +120,14 @@ public class ExampleActivity extends Activity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_example);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.example, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    //Handle inputs
+    void setInputs(){
+        cardNumber = (EditText) findViewById(R.id.add_card_form_card_number);
+        month = (EditText) findViewById(R.id.add_card_form_month);
+        year = (EditText) findViewById(R.id.add_card_form_year);
+        securityCode = (EditText) findViewById(R.id.add_card_form_security_code);
+        name = (EditText) findViewById(R.id.add_card_form_full_name);
+        docType = (EditText) findViewById(R.id.add_card_form_document_type);
+        docNumber = (EditText) findViewById(R.id.add_card_form_document_number);
     }
 }
