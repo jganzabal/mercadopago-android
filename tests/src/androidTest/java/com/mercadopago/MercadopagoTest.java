@@ -27,20 +27,16 @@ public class MercadopagoTest  extends InstrumentationTestCase {
         final CountDownLatch signal = new CountDownLatch(1);
 
         Mercadopago mp = new Mercadopago("841d020b-1077-4742-ad55-7888a0f5aefa");
-        Card card = new Card("4170068810108020",12,2020,123,"adf","DNI","12123123");
+        Card card = new Card("4170068810108020",12,2020,"123","adf","DNI","12123123");
 
-        Callback callback = new Callback<Token>() {
+        Callback callback =  new Callback<Token>() {
             @Override
             public void success(Token o, Response response) {
                 signal.countDown();
             }
             @Override
             public void failure(RetrofitError error) {
-                try {
-                    Assert.fail(String.valueOf(RetrofitUtil.parseErrorBody(error).getString("cause")));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                Assert.fail(String.valueOf(RetrofitUtil.parseErrorBody(error)));
                 signal.countDown();
             }
         };
@@ -91,7 +87,7 @@ public class MercadopagoTest  extends InstrumentationTestCase {
 
     public void testTokenSync() throws Exception {
         Mercadopago mp = new Mercadopago("841d020b-1077-4742-ad55-7888a0f5aefa");
-        Card card = new Card("4170068810108020",12,2020,123,"adf","DNI","12123123");
+        Card card = new Card("4170068810108020",12,2020,"123","adf","DNI","12123123");
         assertNotNull(mp.createToken(card).getId());
     }
 
@@ -108,8 +104,6 @@ public class MercadopagoTest  extends InstrumentationTestCase {
     public void testInstallments(){
         Mercadopago mp = new Mercadopago("841d020b-1077-4742-ad55-7888a0f5aefa");
         PaymentMethod paymentMethod = mp.getPaymentMethodById("visa").get(0);
-
         MercadopagoUtil.getInstallments(paymentMethod, new Double("100")).toString();
-
     }
 }

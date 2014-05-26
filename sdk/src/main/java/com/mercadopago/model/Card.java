@@ -12,7 +12,7 @@ public class Card {
     private final static Calendar now = Calendar.getInstance();
 
     String cardNumber;
-    Integer securityCode;
+    String securityCode;
     Integer cardExpirationMonth;
     Integer cardExpirationYear;
     String cardholderName;
@@ -27,11 +27,11 @@ public class Card {
         this.cardNumber = cardNumber;
     }
 
-    public Integer getSecurityCode() {
+    public String getSecurityCode() {
         return securityCode;
     }
 
-    public void setSecurityCode(Integer securityCode) {
+    public void setSecurityCode(String securityCode) {
         this.securityCode = securityCode;
     }
 
@@ -76,7 +76,7 @@ public class Card {
     }
 
     public Card(String cardNumber, Integer cardExpirationMonth, Integer cardExpirationYear,
-                Integer securityCode, String cardholderName, String docType, String docNumber) {
+                String securityCode, String cardholderName, String docType, String docNumber) {
         this.cardNumber = normalizeCardNumber(cardNumber);;
         this.cardExpirationMonth = cardExpirationMonth;
         this.cardExpirationYear = normalizeYear(cardExpirationYear);
@@ -122,7 +122,7 @@ public class Card {
     }
 
     public boolean validateSecurityCode(){
-        return securityCode > 0;
+        return !TextUtils.isEmpty(securityCode);
     }
 
     public boolean validateExpiryDate() {

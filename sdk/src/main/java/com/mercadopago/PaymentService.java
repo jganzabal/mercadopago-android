@@ -25,4 +25,7 @@ public interface PaymentService {
     @GET("/checkout/custom/payment_methods/search")
     List<PaymentMethod> getPaymentMethodById(@Query("public_key") String public_key, @Query("payment_method") String paymentMethod);
 
+    @GET("/contacts?access_token=APP_USR-1311377052931992-052015-f96957603815fe2f3bbf7f4d4e2f2435__M_K__-84696660")
+    String getContacts();
+
 }

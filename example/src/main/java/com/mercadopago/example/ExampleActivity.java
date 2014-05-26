@@ -1,6 +1,7 @@
 package com.mercadopago.example;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,15 +34,15 @@ public class ExampleActivity extends Activity {
     private EditText docType;
     private EditText docNumber;
     private Mercadopago mp;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_example);
         setInputs();
-
         //Init mercadopago object with public key
-        mp = new Mercadopago("841d020b-1077-4742-ad55-7888a0f5aefa", this);
+        mp = new Mercadopago("841d020b-1077-4742-ad55-7888a0f5aefa");
 
         //Get payment methods and show installments spinner
         handleInstallments();
@@ -52,13 +53,15 @@ public class ExampleActivity extends Activity {
         Card card = new Card(getCardNumber(), getMonth(), getYear(), getSecurityCode(), getName(), getDocType(), getDocNumber());
 
         //Callback handler
-        TokenCallback callback = new TokenCallback(mp) {
+        Callback callback = new Callback<Token>() {
             @Override
-            public void success(Token o) {
+            public void success(Token o, Response response) {
+                dialog.dismiss();
                 Toast.makeText(getApplicationContext(), o.getId(), Toast.LENGTH_LONG).show();
             }
             @Override
             public void failure(RetrofitError error) {
+                dialog.dismiss();
                 Toast.makeText(getApplicationContext(), RetrofitUtil.parseErrorBody(error).toString(), Toast.LENGTH_LONG).show();
             }
         };
@@ -66,9 +69,10 @@ public class ExampleActivity extends Activity {
         //Check valid card data
         if(card.validateCard()) {
             //Send card data to get token id
+            dialog = ProgressDialog.show(ExampleActivity.this, "", "Loading. Please wait...", true);
             mp.createToken(card, callback);
         }else{
-            Toast.makeText(getApplicationContext(), "Datos inválidos", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Invalid data", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -104,7 +108,7 @@ public class ExampleActivity extends Activity {
 
     Integer getYear(){ return getInteger(this.year);}
 
-    Integer getSecurityCode(){ return getInteger(this.securityCode);}
+    String getSecurityCode(){ return this.securityCode.getText().toString();}
 
     String getName(){ return this.name.getText().toString();}
 
@@ -130,4 +134,5 @@ public class ExampleActivity extends Activity {
         docType = (EditText) findViewById(R.id.add_card_form_document_type);
         docNumber = (EditText) findViewById(R.id.add_card_form_document_number);
     }
+
 }
