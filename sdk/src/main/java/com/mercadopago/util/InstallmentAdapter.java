@@ -48,7 +48,7 @@ public class InstallmentAdapter extends BaseAdapter {
 
         PayerCost payerCost = mData.get(position);
 
-        label.setText(payerCost.getInstallments() + " cuotas de " +  payerCost.getShareAmount(mAmount).toString());
+        label.setText(payerCost.getInstallments() + " cuotas de " +  payerCost.getShareAmount(mAmount).toString() + " (" + payerCost.getTotalAmount(mAmount).toString() + ")");
         return vi;
     }
 

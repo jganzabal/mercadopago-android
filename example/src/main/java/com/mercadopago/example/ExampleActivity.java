@@ -11,7 +11,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.mercadopago.Mercadopago;
-import com.mercadopago.TokenCallback;
 import com.mercadopago.model.Card;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.Token;
@@ -42,7 +41,7 @@ public class ExampleActivity extends Activity {
         setContentView(R.layout.activity_example);
         setInputs();
         //Init mercadopago object with public key
-        mp = new Mercadopago("841d020b-1077-4742-ad55-7888a0f5aefa");
+        mp = new Mercadopago("841d020b-1077-4742-ad55-7888a0f5aefa", ExampleActivity.this);
 
         //Get payment methods and show installments spinner
         handleInstallments();
@@ -84,7 +83,11 @@ public class ExampleActivity extends Activity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length() == 6) {
+                if(s.length() == 4) {
+                    cardNumber.append(" ");
+                }
+
+                    if(s.length() == 6) {
                     Callback cb = new Callback<List<PaymentMethod>>() {
                         @Override
                         public void success(List<PaymentMethod> o, Response response) {

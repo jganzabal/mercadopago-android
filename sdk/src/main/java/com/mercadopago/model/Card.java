@@ -1,7 +1,10 @@
 package com.mercadopago.model;
 
+import android.content.Context;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -10,6 +13,8 @@ import java.util.Map;
 
 public class Card {
     private final static Calendar now = Calendar.getInstance();
+    public static final int MIN_LENGTH_NUMBER = 10;
+    public static final int MAX_LENGTH_NUMBER = 19;
 
     String cardNumber;
     String securityCode;
@@ -18,6 +23,15 @@ public class Card {
     String cardholderName;
     String docType;
     String docNumber;
+    Device device;
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Context context) {
+        this.device = new Device(context);
+    }
 
     public String getCardNumber() {
         return cardNumber;
@@ -118,11 +132,11 @@ public class Card {
     }
 
     public boolean validateCardNumber(){
-        return !TextUtils.isEmpty(cardNumber);
+        return !TextUtils.isEmpty(cardNumber) && (cardNumber.length() > MIN_LENGTH_NUMBER) && (cardNumber.length() < MAX_LENGTH_NUMBER);
     }
 
     public boolean validateSecurityCode(){
-        return !TextUtils.isEmpty(securityCode);
+        return securityCode == null || (!TextUtils.isEmpty(securityCode) && securityCode.length() >= 3 && securityCode.length() < 4);
     }
 
     public boolean validateExpiryDate() {
