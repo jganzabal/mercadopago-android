@@ -3,9 +3,6 @@ package com.mercadopago.model;
 import android.content.Context;
 import android.text.TextUtils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -18,11 +15,9 @@ public class Card {
 
     String cardNumber;
     String securityCode;
-    Integer cardExpirationMonth;
-    Integer cardExpirationYear;
-    String cardholderName;
-    String docType;
-    String docNumber;
+    Integer expirationMonth;
+    Integer expirationYear;
+    Cardholder cardholder;
     Device device;
 
     public Device getDevice() {
@@ -49,75 +44,33 @@ public class Card {
         this.securityCode = securityCode;
     }
 
-    public Integer getCardExpirationMonth() {
-        return cardExpirationMonth;
+    public Integer getExpirationMonth() {
+        return expirationMonth;
     }
 
-    public void setCardExpirationMonth(Integer cardExpirationMonth) {
-        this.cardExpirationMonth = cardExpirationMonth;
+    public void setExpirationMonth(Integer expirationMonth) {
+        this.expirationMonth = expirationMonth;
     }
 
-    public Integer getCardExpirationYear() {
-        return cardExpirationYear;
+    public Integer getExpirationYear() {
+        return expirationYear;
     }
 
-    public void setCardExpirationYear(Integer cardExpirationYear) {
-        this.cardExpirationYear = cardExpirationYear;
+    public void setExpirationYear(Integer expirationYear) {
+        this.expirationYear = expirationYear;
     }
 
-    public String getCardholderName() {
-        return cardholderName;
-    }
-
-    public void setCardholderName(String cardholderName) {
-        this.cardholderName = cardholderName;
-    }
-
-    public String getDocType() {
-        return docType;
-    }
-
-    public void setDocType(String docType) {
-        this.docType = docType;
-    }
-
-    public String getDocNumber() {
-        return docNumber;
-    }
-
-    public void setDocNumber(String docNumber) {
-        this.docNumber = docNumber;
-    }
-
-    public Card(String cardNumber, Integer cardExpirationMonth, Integer cardExpirationYear,
+    public Card(String cardNumber, Integer expirationMonth, Integer expirationYear,
                 String securityCode, String cardholderName, String docType, String docNumber) {
         this.cardNumber = normalizeCardNumber(cardNumber);;
-        this.cardExpirationMonth = cardExpirationMonth;
-        this.cardExpirationYear = normalizeYear(cardExpirationYear);
+        this.expirationMonth = expirationMonth;
+        this.expirationYear = normalizeYear(expirationYear);
         this.securityCode = securityCode;
-        this.cardholderName = cardholderName;
-        this.docType = docType;
-        this.docNumber = docNumber;
-    }
-
-    public Map<String, Object> getAsMap() {
-        Map<String, Object> cardParams = new HashMap<String, Object>();
-        Map<String, Object> cardHolder = new HashMap<String, Object>();
-        Map<String, Object> document = new HashMap<String, Object>();
-
-        cardParams.put("card_number", cardNumber);
-        cardParams.put("security_code", securityCode);
-        cardParams.put("expiration_month", cardExpirationMonth);
-        cardParams.put("expiration_year", cardExpirationYear);
-
-        document.put("type", docType);
-        document.put("number", docNumber);
-        cardHolder.put("document", document);
-        cardHolder.put("name", cardholderName);
-
-        cardParams.put("cardholder", cardHolder);
-
-        return cardParams;
+        this.cardholder = new Cardholder();
+        this.cardholder.setName(cardholderName);
+        this.cardholder.identification = new Identification();
+        this.cardholder.identification.setNumber(docNumber);
+        this.cardholder.identification.setType(docType);
     }
 
     private String normalizeCardNumber(String number) {
@@ -136,7 +89,7 @@ public class Card {
     }
 
     public boolean validateSecurityCode(){
-        return securityCode == null || (!TextUtils.isEmpty(securityCode) && securityCode.length() >= 3 && securityCode.length() < 4);
+        return securityCode == null || (!TextUtils.isEmpty(securityCode) && securityCode.length() >= 3 && securityCode.length() <= 4);
     }
 
     public boolean validateExpiryDate() {
@@ -146,21 +99,21 @@ public class Card {
         if (!validateExpYear()) {
             return false;
         }
-        return !hasMonthPassed(cardExpirationYear, cardExpirationMonth);
+        return !hasMonthPassed(expirationYear, expirationMonth);
     }
 
     public boolean validateExpMonth() {
-        if (cardExpirationMonth == null) {
+        if (expirationMonth == null) {
             return false;
         }
-        return (cardExpirationMonth >= 1 && cardExpirationMonth <= 12);
+        return (expirationMonth >= 1 && expirationMonth <= 12);
     }
 
     public boolean validateExpYear() {
-        if (cardExpirationYear == null) {
+        if (expirationYear == null) {
             return false;
         }
-        return !hasYearPassed(cardExpirationYear);
+        return !hasYearPassed(expirationYear);
     }
 
     public boolean validateDoc(){
@@ -168,15 +121,15 @@ public class Card {
     }
 
     public boolean validateDocType(){
-        return !TextUtils.isEmpty(docType);
+        return !TextUtils.isEmpty(cardholder.getIdentification().getType());
     }
 
     public boolean validateDocNumber(){
-        return !TextUtils.isEmpty(docNumber);
+        return !TextUtils.isEmpty(cardholder.getIdentification().getNumber());
     }
 
     public boolean validateCardholderName(){
-        return !TextUtils.isEmpty(cardholderName);
+        return !TextUtils.isEmpty(cardholder.getName());
     }
 
     private static boolean hasYearPassed(int year) {
