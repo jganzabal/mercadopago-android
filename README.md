@@ -298,7 +298,7 @@ From your server:
 	      "amount": 10,
 	      "reason": "Item Title",
 	      "installments": 1,
-	      "payment_code": "tokenId",
+	      "card_token_id": "card_token",
 	      "payer_email": "payer@email.com",
 	      "external_reference": "1234_your_reference",
 	      "payment_method_id" : "visa",                   //Just for México
