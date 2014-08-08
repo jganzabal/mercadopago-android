@@ -23,7 +23,7 @@ Coming soon. We are building it. See the 'example' folder under your own risk =)
 
 ## Integration
 
-First, you need a publishable key to collect a token. Send an email to developers@mercadopago.com to ask for your public key.
+First, you need a publishable key to collect a token. Send an e-mail to developers@mercadopago.com with your user and your test users e-mails in order to request the public_key which will identify you when submitting credit card data to our system.
 
 Once you have it:
 
